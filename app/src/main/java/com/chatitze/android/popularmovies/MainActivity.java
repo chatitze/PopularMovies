@@ -1,18 +1,15 @@
 package com.chatitze.android.popularmovies;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chatitze.android.popularmovies.adapter.ImageAdapter;
 import com.chatitze.android.popularmovies.utilities.MovieDatabaseJsonUtils;
@@ -22,22 +19,24 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private GridView mGridView;
+    private RecyclerView mMoviesList;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
 
     private String mSortBy = NetworkUtils.sortByPopularity;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGridView = (GridView) findViewById(R.id.gv_movies);
+        mMoviesList = (RecyclerView) findViewById(R.id.rv_movies);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 4);
+        mMoviesList.setLayoutManager(gridLayoutManager);
+        mMoviesList.setHasFixedSize(true);
 
         loadMoviesData();
     }
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         /* Then, make sure the movie data is visible */
-        mGridView.setVisibility(View.VISIBLE);
+        mMoviesList.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -74,9 +73,31 @@ public class MainActivity extends AppCompatActivity {
      */
     private void showErrorMessage() {
         /* First, hide the currently visible data */
-        mGridView.setVisibility(View.INVISIBLE);
+        mMoviesList.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.movies, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_sortByPopularity:
+                mSortBy = NetworkUtils.sortByPopularity;
+                break;
+            case R.id.action_sortByTopRated:
+                mSortBy = NetworkUtils.sortByTopRated;
+                break;
+        }
+        loadMoviesData();
+
+        return super.onOptionsItemSelected(item);
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
@@ -114,57 +135,18 @@ public class MainActivity extends AppCompatActivity {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (movieData != null) {
                 showMoviesDataView();
-
                 String [] imageUrls = new String[movieData.length];
 
                 for (int i = 0; i < movieData.length; i++){
-                    String movieString = movieData[i];
-                    String[] myMovieDetails = movieString.split("_");
-
+                    String[] myMovieDetails = movieData[i].split("_");
                     imageUrls[i] = myMovieDetails[0];
                 }
-                ImageAdapter mImageAdapter = new ImageAdapter(MainActivity.this, imageUrls);
-                mGridView.setAdapter(mImageAdapter);
-
-                mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                        Toast.makeText(getBaseContext(), "pic" + (position + 1) + " selected", Toast.LENGTH_SHORT).show();
-
-                        final String[] mMovieDetails = movieData[position].split("_");
-                        final Intent i = new Intent(v.getContext(), MovieDetailsActivity.class);
-                        i.putExtra("movieDetails", mMovieDetails);
-                        v.getContext().startActivity(i);
-                    }
-                });
+                ImageAdapter mImageAdapter = new ImageAdapter(MainActivity.this, imageUrls, movieData);
+                mMoviesList.setAdapter(mImageAdapter);
             } else {
                 showErrorMessage();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
-        MenuInflater inflater = getMenuInflater();
-        /* Use the inflater's inflate method to inflate our menu layout to this menu */
-        inflater.inflate(R.menu.movies, menu);
-        /* Return true so that the menu is displayed in the Toolbar */
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_sortByPopularity:
-                mSortBy = NetworkUtils.sortByPopularity;
-                break;
-            case R.id.action_sortByTopRated:
-                mSortBy = NetworkUtils.sortByTopRated;
-                break;
-        }
-        loadMoviesData();
-
-        return super.onOptionsItemSelected(item);
     }
 
 }

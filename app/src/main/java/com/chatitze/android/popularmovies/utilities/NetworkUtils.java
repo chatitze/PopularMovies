@@ -25,7 +25,7 @@ public class NetworkUtils {
             "http://image.tmdb.org/t/p/w500/";
 
     final static String PARAM_QUERY = "api_key";
-    final static String API_KEY = "d1a53e6693a9ab0ab36556b35dee3401";
+    final static String API_KEY = "YOUR_API_KEY";
 
     /*
      * Default: results are sorted by popularity.
