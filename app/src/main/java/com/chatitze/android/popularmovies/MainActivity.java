@@ -1,5 +1,6 @@
 package com.chatitze.android.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,13 +18,16 @@ import com.chatitze.android.popularmovies.utilities.NetworkUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+                            implements ImageAdapter.ListItemClickListener{
 
     private RecyclerView mMoviesList;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
 
     private String mSortBy = NetworkUtils.sortByPopularity;
+
+    private String [] movieDataFromAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void loadMoviesData() {
         showMoviesDataView();
-        new FetchMoviesTask().execute(mSortBy);
+        new FetchMoviesTask(new AsyncResponse(){
+            @Override
+            public void processFinish(String[] output){
+                movieDataFromAsyncTask = output;
+            }
+        }).execute(mSortBy);
     }
 
     /**
@@ -100,7 +109,34 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * This is where we receive our callback from
+     * {@link com.chatitze.android.popularmovies.adapter.ImageAdapter.ListItemClickListener}
+     *
+     * This callback is invoked when you click on an item in the list.
+     *
+     * @param clickedItemIndex Index in the list of the item that was clicked.
+     */
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+
+        final String[] mMovieDetails = movieDataFromAsyncTask[clickedItemIndex].split("_");
+        final Intent i = new Intent(this, MovieDetailsActivity.class);
+        i.putExtra("movieDetails", mMovieDetails);
+        startActivity(i);
+    }
+
+    public interface AsyncResponse {
+        void processFinish(String [] output);
+    }
+
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
+
+        public AsyncResponse delegate = null;
+
+        public FetchMoviesTask(AsyncResponse delegate){
+            this.delegate = delegate;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -141,8 +177,9 @@ public class MainActivity extends AppCompatActivity {
                     String[] myMovieDetails = movieData[i].split("_");
                     imageUrls[i] = myMovieDetails[0];
                 }
-                ImageAdapter mImageAdapter = new ImageAdapter(MainActivity.this, imageUrls, movieData);
+                ImageAdapter mImageAdapter = new ImageAdapter(MainActivity.this, imageUrls, MainActivity.this);
                 mMoviesList.setAdapter(mImageAdapter);
+                delegate.processFinish(movieData);
             } else {
                 showErrorMessage();
             }

@@ -25,7 +25,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private Context mContext;
     private String[]  mImageUrls;
-    private String [] mMovieData;
+
+    final private ListItemClickListener mOnClickListener;
+
+
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface ListItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
 
     /**
      * Constructor for ImageAdapter that accepts a number of items to display and the specification
@@ -33,12 +43,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      *
      * @param context
      * @param imageUrls
-     * @param movieData
      */
-    public ImageAdapter(Context context, String [] imageUrls, String [] movieData) {
+    public ImageAdapter(Context context, String [] imageUrls, ListItemClickListener listener) {
         this.mImageUrls = imageUrls;
         this.mContext   = context;
-        this.mMovieData = movieData;
+        this.mOnClickListener = listener;
     }
 
     /**
@@ -131,13 +140,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            //Toast.makeText(mContext, "pic" + (position + 1) + " selected", Toast.LENGTH_SHORT).show();
-
-            final String[] mMovieDetails = mMovieData[position].split("_");
-            final Intent i = new Intent(v.getContext(), MovieDetailsActivity.class);
-            i.putExtra("movieDetails", mMovieDetails);
-            v.getContext().startActivity(i);
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 
