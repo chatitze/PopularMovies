@@ -1,7 +1,11 @@
 package com.chatitze.android.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +17,8 @@ import com.squareup.picasso.Picasso;
  */
 
 public class MovieDetailsActivity extends AppCompatActivity {
+
+    private static final String POPULAR_MOVIES_SHARE_HASHTAG = " #PopularMoviesApp";
 
     private String [] mMovieDetails;
     private ImageView mMovieImage;
@@ -32,14 +38,43 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mReleaseDate   = (TextView) findViewById(R.id.tv_release_date);
         mRating        = (TextView) findViewById(R.id.tv_rating);
 
-        Bundle extras = getIntent().getExtras();
-        mMovieDetails = extras.getStringArray("movieDetails");
+        Intent intentThatStartedThisActivity = getIntent();
+        if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
+            mMovieDetails = intentThatStartedThisActivity.getStringArrayExtra(Intent.EXTRA_TEXT);
 
-        Picasso.with(MovieDetailsActivity.this).load(NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieDetails[0]).into(mMovieImage);
-        mOriginalTitle.setText(mMovieDetails[1]);
-        mRating.setText("Rating: " + mMovieDetails[2]);
-        mReleaseDate.setText("Released: " + mMovieDetails[3]);
-        mOverview.setText(mMovieDetails[4]);
+            Picasso.with(MovieDetailsActivity.this).load(NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieDetails[0]).into(mMovieImage);
+            mOriginalTitle.setText(mMovieDetails[1]);
+            mRating.setText("Rating: " + mMovieDetails[2]);
+            mReleaseDate.setText("Released: " + mMovieDetails[3]);
+            mOverview.setText(mMovieDetails[4]);
+        }
+    }
+
+    /**
+     * Uses the ShareCompat Intent builder to create our Movie intent for sharing. We set the
+     * type of content that we are sharing (just regular text), the text itself, and we return the
+     * newly created Intent.
+     *
+     * @return The Intent to use to start our share.
+     */
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText("Title: " + mMovieDetails[1]
+                        + " Rating: " + mMovieDetails[2]
+                        + " Released: " + mMovieDetails[3]
+                        + " Overview: " + mMovieDetails[4]
+                        + POPULAR_MOVIES_SHARE_HASHTAG)
+                .getIntent();
+        return shareIntent;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        menuItem.setIntent(createShareForecastIntent());
+        return true;
     }
 
 }

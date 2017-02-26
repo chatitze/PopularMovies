@@ -121,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     @Override
     public void onClick(int clickedMovieIndex) {
         final String[] movieDetails = mMovieDataFromAsyncTask[clickedMovieIndex].split("_");
-        final Intent i = new Intent(MainActivity.this, MovieDetailsActivity.class);
-        i.putExtra("movieDetails", movieDetails);
-        startActivity(i);
+        final Intent startMovieDetailsActivityIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+        startMovieDetailsActivityIntent.putExtra(Intent.EXTRA_TEXT, movieDetails);
+        startActivity(startMovieDetailsActivityIntent);
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
