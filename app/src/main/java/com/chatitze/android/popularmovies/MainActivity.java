@@ -1,5 +1,6 @@
 package com.chatitze.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -18,29 +19,34 @@ import com.chatitze.android.popularmovies.utilities.NetworkUtils;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity
-                            implements ImageAdapter.ListItemClickListener{
+public class MainActivity extends AppCompatActivity implements ImageAdapter.ImageAdapterOnClickHandler {
 
-    private RecyclerView mMoviesList;
+    private RecyclerView mRecyclerView;
+    private ImageAdapter mImageAdapter;
     private ProgressBar mLoadingIndicator;
     private TextView mErrorMessageDisplay;
 
     private String mSortBy = NetworkUtils.sortByPopularity;
 
-    private String [] movieDataFromAsyncTask;
+    private String [] mMovieDataFromAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesList = (RecyclerView) findViewById(R.id.rv_movies);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 4);
-        mMoviesList.setLayoutManager(gridLayoutManager);
-        mMoviesList.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+
+        Context context = MainActivity.this;
+        ImageAdapter.ImageAdapterOnClickHandler clickHandler = MainActivity.this;
+        mImageAdapter = new ImageAdapter(context, clickHandler);
+        mRecyclerView.setAdapter(mImageAdapter);
 
         loadMoviesData();
     }
@@ -51,12 +57,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void loadMoviesData() {
         showMoviesDataView();
-        new FetchMoviesTask(new AsyncResponse(){
-            @Override
-            public void processFinish(String[] output){
-                movieDataFromAsyncTask = output;
-            }
-        }).execute(mSortBy);
+        new FetchMoviesTask().execute(mSortBy);
     }
 
     /**
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity
         /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         /* Then, make sure the movie data is visible */
-        mMoviesList.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity
      */
     private void showErrorMessage() {
         /* First, hide the currently visible data */
-        mMoviesList.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
@@ -111,32 +112,21 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * This is where we receive our callback from
-     * {@link com.chatitze.android.popularmovies.adapter.ImageAdapter.ListItemClickListener}
+     * {@link ImageAdapter.ImageAdapterOnClickHandler}
      *
      * This callback is invoked when you click on an item in the list.
      *
-     * @param clickedItemIndex Index in the list of the item that was clicked.
+     * @param clickedMovieIndex Index in the list of the item that was clicked.
      */
     @Override
-    public void onListItemClick(int clickedItemIndex) {
-
-        final String[] mMovieDetails = movieDataFromAsyncTask[clickedItemIndex].split("_");
-        final Intent i = new Intent(this, MovieDetailsActivity.class);
-        i.putExtra("movieDetails", mMovieDetails);
+    public void onClick(int clickedMovieIndex) {
+        final String[] movieDetails = mMovieDataFromAsyncTask[clickedMovieIndex].split("_");
+        final Intent i = new Intent(MainActivity.this, MovieDetailsActivity.class);
+        i.putExtra("movieDetails", movieDetails);
         startActivity(i);
     }
 
-    public interface AsyncResponse {
-        void processFinish(String [] output);
-    }
-
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
-
-        public AsyncResponse delegate = null;
-
-        public FetchMoviesTask(AsyncResponse delegate){
-            this.delegate = delegate;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -146,7 +136,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected String[] doInBackground(String... params) {
-            /* If there's no zip code, there's nothing to look up. */
+            /* If there's no sortBy, there's nothing to look up. */
             if (params.length == 0) {
                 return null;
             }
@@ -177,9 +167,8 @@ public class MainActivity extends AppCompatActivity
                     String[] myMovieDetails = movieData[i].split("_");
                     imageUrls[i] = myMovieDetails[0];
                 }
-                ImageAdapter mImageAdapter = new ImageAdapter(MainActivity.this, imageUrls, MainActivity.this);
-                mMoviesList.setAdapter(mImageAdapter);
-                delegate.processFinish(movieData);
+                mImageAdapter.setImageData(imageUrls);
+                mMovieDataFromAsyncTask = movieData;
             } else {
                 showErrorMessage();
             }

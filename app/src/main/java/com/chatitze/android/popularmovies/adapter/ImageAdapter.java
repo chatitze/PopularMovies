@@ -1,15 +1,12 @@
 package com.chatitze.android.popularmovies.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.chatitze.android.popularmovies.MovieDetailsActivity;
 import com.chatitze.android.popularmovies.R;
 import com.chatitze.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -19,35 +16,65 @@ import com.squareup.picasso.Picasso;
  * Created by chatitze on 02/02/2017.
  */
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
+/**
+ * {@link ImageAdapter} exposes a grid of movie posters to a
+ * {@link android.support.v7.widget.RecyclerView}
+ */
 
-    private static final String TAG = ImageAdapter.class.getSimpleName();
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
     private Context mContext;
     private String[]  mImageUrls;
 
-    final private ListItemClickListener mOnClickListener;
+    final private ImageAdapterOnClickHandler mClickHandler;
 
 
     /**
      * The interface that receives onClick messages.
      */
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
+    public interface ImageAdapterOnClickHandler {
+        void onClick(int clickedMovieIndex);
     }
 
 
     /**
-     * Constructor for ImageAdapter that accepts a number of items to display and the specification
-     * for the ListItemClickListener.
+     * Constructor for ImageAdapter that accepts a context and the specification
+     * for the ImageAdapterOnClickHandler.
      *
      * @param context
-     * @param imageUrls
+     * @param clickHandler
      */
-    public ImageAdapter(Context context, String [] imageUrls, ListItemClickListener listener) {
-        this.mImageUrls = imageUrls;
+    public ImageAdapter(Context context, ImageAdapterOnClickHandler clickHandler) {
         this.mContext   = context;
-        this.mOnClickListener = listener;
+        this.mClickHandler = clickHandler;
+    }
+
+    /**
+     * Cache of the children views for a list item.
+     */
+    public class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public final ImageView imageView;
+
+        /**
+         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
+         * ImageView and set an onClickListener to listen for clicks. Those will be handled in the
+         * onClick method below.
+         * @param itemView The View that you inflated in
+         *                 {@link ImageAdapter#onCreateViewHolder(ViewGroup, int)}
+         */
+        public ImageViewHolder(View itemView) {
+            super(itemView);
+            imageView = (ImageView) itemView.findViewById(R.id.iv_item_image);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mClickHandler.onClick(clickedPosition);
+        }
     }
 
     /**
@@ -87,8 +114,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      */
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int position) {
-        Log.d(TAG, "#" + position);
-        holder.bind(position);
+        String url = NetworkUtils.MOVIES_POSTER_ENDPOINT + mImageUrls[position];
+        Picasso.with(mContext).load(url).into(holder.imageView);
     }
 
     /**
@@ -99,50 +126,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      */
     @Override
     public int getItemCount() {
+        if (null == mImageUrls) return 0;
         return mImageUrls.length;
     }
 
 
-    public String getItem(int position) {
-        return mImageUrls[position];
-    }
-
     /**
-     * Cache of the children views for a list item.
+     * This method is used to set the image url's on an ImageAdapter if we've already
+     * created one. This is handy when we get new data from the web but don't want to create a
+     * new ImageAdapter to display it.
+     *
+     * @param imageUrls The new image url's data to be displayed.
      */
-    class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        ImageView imageView;
-
-        /**
-         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
-         * ImageView and set an onClickListener to listen for clicks. Those will be handled in the
-         * onClick method below.
-         * @param itemView The View that you inflated in
-         *                 {@link ImageAdapter#onCreateViewHolder(ViewGroup, int)}
-         */
-        public ImageViewHolder(View itemView) {
-            super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.iv_item_image);
-
-            itemView.setOnClickListener(this);
-        }
-
-        /**
-         * A method we wrote for convenience. This method will take an integer as input and
-         * use that integer to display the appropriate image within a grid item.
-         * @param imageUrlIndex Position of the image in the grid
-         */
-        void bind(int imageUrlIndex) {
-            String url = NetworkUtils.MOVIES_POSTER_ENDPOINT + getItem(imageUrlIndex);
-            Picasso.with(mContext).load(url).into(imageView);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition);
-        }
+    public void setImageData(String[] imageUrls) {
+        mImageUrls = imageUrls;
+        notifyDataSetChanged();
     }
 
 }
