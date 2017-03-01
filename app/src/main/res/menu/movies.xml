@@ -11,4 +11,8 @@
         android:id="@+id/action_sortByTopRated"
         android:orderInCategory="1"
         android:title="@string/action_sortByTopRated"/>
+    <item
+        android:id="@+id/action_refresh"
+        android:orderInCategory="2"
+        android:title="@string/action_refresh"/>
 </menu>

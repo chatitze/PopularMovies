@@ -6,5 +6,6 @@
     <string name="action_sortByPopularity">Sort by popularity</string>
     <string name="action_sortByTopRated">Sort by top rated</string>
     <string name="action_share">Share</string>
+    <string name="action_refresh">Refresh</string>
 
 </resources>
