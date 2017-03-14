@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chatitze.android.popularmovies.adapter.ImageAdapter;
+import com.chatitze.android.popularmovies.data.SinemaPreferences;
 import com.chatitze.android.popularmovies.utilities.MovieDatabaseJsonUtils;
 import com.chatitze.android.popularmovies.utilities.NetworkUtils;
 
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      * refresh of our data, you can see that there is no data showing.
      */
     private void invalidateData() {
+        setImageDownloadOption();
         mImageAdapter.setImageData(null);
     }
 
@@ -246,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
                 String[] myMovieDetails = data[i].split("_");
                 imageUrls[i] = myMovieDetails[0];
             }
+            setImageDownloadOption();
             mImageAdapter.setImageData(imageUrls);
             mMovieDataFromAsyncTask = data;
         } else {
@@ -266,6 +269,13 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
          * We aren't using this method in our example application, but we are required to Override
          * it to implement the LoaderCallbacks<String> interface
          */
+    }
+
+    private void setImageDownloadOption(){
+        if(SinemaPreferences.isPreferredImageDownload_WifiOnly(this))
+            mImageAdapter.setIsDownloadEnabled(NetworkUtils.isConnectedThroughWiFi(this));
+        else
+            mImageAdapter.setIsDownloadEnabled(true);
     }
 
     @Override

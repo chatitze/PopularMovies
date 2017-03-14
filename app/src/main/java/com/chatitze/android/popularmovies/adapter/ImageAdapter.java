@@ -25,6 +25,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     private Context mContext;
     private String[]  mImageUrls;
+    private boolean isDownloadEnabled;
 
     final private ImageAdapterOnClickHandler mClickHandler;
 
@@ -114,8 +115,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      */
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int position) {
+        if( !isDownloadEnabled ){
+           holder.imageView.setImageResource(R.drawable.place_holder_bitmap);
+            return;
+        }
         String url = NetworkUtils.MOVIES_POSTER_ENDPOINT + mImageUrls[position];
-        Picasso.with(mContext).load(url).into(holder.imageView);
+        Picasso.with(mContext).load(url).placeholder(R.drawable.place_holder_bitmap) // optional
+                .error(R.drawable.place_holder_bitmap).into(holder.imageView);
     }
 
     /**
@@ -143,4 +149,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         notifyDataSetChanged();
     }
 
+    public void setIsDownloadEnabled(boolean isDownloadImageEnabled){
+        isDownloadEnabled = isDownloadImageEnabled;
+    }
 }

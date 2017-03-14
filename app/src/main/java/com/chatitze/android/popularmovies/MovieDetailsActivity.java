@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chatitze.android.popularmovies.data.SinemaPreferences;
 import com.chatitze.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -42,7 +43,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
             mMovieDetails = intentThatStartedThisActivity.getStringArrayExtra(Intent.EXTRA_TEXT);
 
-            Picasso.with(MovieDetailsActivity.this).load(NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieDetails[0]).into(mMovieImage);
+            if(SinemaPreferences.isPreferredImageDownload_WifiOnly(this) && NetworkUtils.isConnectedThroughWiFi(this))
+                Picasso.with(MovieDetailsActivity.this).load(NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieDetails[0])
+                        .placeholder(R.drawable.place_holder_bitmap) // optional
+                        .error(R.drawable.place_holder_bitmap)
+                        .into(mMovieImage);
+            else
+                mMovieImage.setImageResource(R.drawable.place_holder_bitmap);
+
             mOriginalTitle.setText(mMovieDetails[1]);
             mRating.setText("Rating: " + mMovieDetails[2]);
             mReleaseDate.setText("Released: " + mMovieDetails[3]);
