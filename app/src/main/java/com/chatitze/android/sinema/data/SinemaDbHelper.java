@@ -23,7 +23,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     public SinemaDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -50,7 +50,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
                  * SinemaEntry implements the interface, "BaseColumns", which does have a field
                  * named "_ID". We use that here to designate our table's primary key.
                  */
-                        SinemaEntry._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        SinemaEntry._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
 
                         SinemaEntry.COLUMN_RELEASE_DATE     + " INTEGER NOT NULL, "                 +
 
@@ -58,7 +58,14 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
                         SinemaEntry.COLUMN_RATING           + " INTEGER NOT NULL, "                 +
 
                         SinemaEntry.COLUMN_ORIGINAL_TITLE   + " REAL NOT NULL, "                    +
-                        SinemaEntry.COLUMN_OVERVIEW         + " REAL NOT NULL" + ");";
+                        SinemaEntry.COLUMN_OVERVIEW         + " REAL NOT NULL"                      +
+                        /*
+                         * To ensure this table can only contain one Movie with the same movie id, we declare
+                         * the movie id column to be unique. We also specify "ON CONFLICT REPLACE". This tells
+                         * SQLite that if we have a movie entry with a certain id and we attempt to
+                         * insert another movie entry with that id, we replace the old movie entry.
+                         */
+                        " UNIQUE (" + SinemaEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute
