@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
 
@@ -15,4 +16,9 @@
         android:id="@+id/action_refresh"
         android:orderInCategory="2"
         android:title="@string/action_refresh"/>
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 </menu>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default value for wifi only preference -->
+    <bool name="pref_wifi_default" translatable="false">true</bool>
+</resources>

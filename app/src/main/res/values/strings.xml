@@ -1,11 +1,45 @@
 <resources>
+
+    <!-- - - - - - - - - - - - - -->
+    <!-- Used throughout Sinema  -->
+    <!-- - - - - - - - - - - - - -->
+    <!--Used in Action Bar, and in AndroidManifest to tell the device the name of this app.-->
+    <!--It's good to keep this short, so your launcher icon isn't displayed with "The greatest Wea"-->
+    <!--or something similar.-->
     <string name="app_name">PopularMovies</string>
-    <string name="error_message">
-        Failed to load movies data. Please try again.
-    </string>
+
+
+    <!-- - - - - - - - - - - -->
+    <!--   Used by Actions   -->
+    <!-- - - - - - - - - - - -->
+    <!--By convention, "action" denotes that this String will be used as the label for an Action,-->
+    <!--typically from the action bar.  The ActionBar is limited real estate, so shorter is better.-->
     <string name="action_sortByPopularity">Sort by popularity</string>
     <string name="action_sortByTopRated">Sort by top rated</string>
     <string name="action_share">Share</string>
+    <!--Used in overflow menu to refresh movie data-->
     <string name="action_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+
+
+    <!-- - - - - - - - - - - -->
+    <!--Used by Preferences  -->
+    <!-- - - - - - - - - - - -->
+
+    <!-- Label for wifi only preference -->
+    <string name="pref_wifi_label">Images via Wi-Fi only</string>
+
+    <!-- Key name for wifi only in SharedPreferences -->
+    <string name="pref_wifi_key" translatable="false">wifi_only</string>
+
+    <!-- Summary of wifi only preference -->
+    <string name="pref_wifi_summary">To prevent data charges, don\'t download over mobile networks</string>
+
+
+
+
+
+    <string name="error_message">An error has occurred. Please try again by clicking REFRESH in actions</string>
+
 
 </resources>

@@ -57,7 +57,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
      *
      * @return The Intent to use to start our share.
      */
-    private Intent createShareForecastIntent() {
+    private Intent createShareMovieIntent() {
         Intent shareIntent = ShareCompat.IntentBuilder.from(this)
                 .setType("text/plain")
                 .setText("Title: " + mMovieDetails[1]
@@ -73,8 +73,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail, menu);
         MenuItem menuItem = menu.findItem(R.id.action_share);
-        menuItem.setIntent(createShareForecastIntent());
+        menuItem.setIntent(createShareMovieIntent());
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+                startActivity(startSettingsActivity);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
