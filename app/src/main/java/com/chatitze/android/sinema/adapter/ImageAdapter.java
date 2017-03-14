@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies.adapter;
+package com.chatitze.android.sinema.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.chatitze.android.popularmovies.R;
-import com.chatitze.android.popularmovies.utilities.NetworkUtils;
+import com.chatitze.android.sinema.R;
+import com.chatitze.android.sinema.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 

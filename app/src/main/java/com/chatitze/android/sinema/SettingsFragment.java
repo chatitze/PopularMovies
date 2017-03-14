@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies;
+package com.chatitze.android.sinema;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

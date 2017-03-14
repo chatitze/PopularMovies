@@ -1,10 +1,10 @@
-package com.chatitze.android.popularmovies.data;
+package com.chatitze.android.sinema.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 
-import com.chatitze.android.popularmovies.R;
+import com.chatitze.android.sinema.R;
 
 
 /**

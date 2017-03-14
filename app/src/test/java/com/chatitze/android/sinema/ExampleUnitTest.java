@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies;
+package com.chatitze.android.sinema;
 
 import org.junit.Test;
 

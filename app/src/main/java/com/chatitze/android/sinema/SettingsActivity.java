@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies;
+package com.chatitze.android.sinema;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;

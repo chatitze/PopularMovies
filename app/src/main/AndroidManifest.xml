@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.chatitze.android.popularmovies">
+    package="com.chatitze.android.sinema">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.chatitze.android.sinema.MainActivity"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,13 +21,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MovieDetailsActivity"
-            android:parentActivityName=".MainActivity">
+            android:name="com.chatitze.android.sinema.MovieDetailsActivity"
+            android:parentActivityName="com.chatitze.android.sinema.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.chatitze.android.sinema.MainActivity" />
         </activity>
-        <activity android:name=".SettingsActivity"/>
+        <activity android:name="com.chatitze.android.sinema.SettingsActivity"/>
 
         <meta-data
             android:name="com.google.android.gms.version"

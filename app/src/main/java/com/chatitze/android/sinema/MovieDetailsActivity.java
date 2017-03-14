@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies;
+package com.chatitze.android.sinema;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chatitze.android.popularmovies.data.SinemaPreferences;
-import com.chatitze.android.popularmovies.utilities.NetworkUtils;
+import com.chatitze.android.sinema.data.SinemaPreferences;
+import com.chatitze.android.sinema.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 /**

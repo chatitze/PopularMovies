@@ -1,4 +1,4 @@
-package com.chatitze.android.popularmovies.utilities;
+package com.chatitze.android.sinema.utilities;
 
 import android.content.Context;
 

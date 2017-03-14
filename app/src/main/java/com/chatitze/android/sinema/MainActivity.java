@@ -1,9 +1,8 @@
-package com.chatitze.android.popularmovies;
+package com.chatitze.android.sinema;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -19,10 +18,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.chatitze.android.popularmovies.adapter.ImageAdapter;
-import com.chatitze.android.popularmovies.data.SinemaPreferences;
-import com.chatitze.android.popularmovies.utilities.MovieDatabaseJsonUtils;
-import com.chatitze.android.popularmovies.utilities.NetworkUtils;
+import com.chatitze.android.sinema.adapter.ImageAdapter;
+import com.chatitze.android.sinema.data.SinemaPreferences;
+import com.chatitze.android.sinema.utilities.MovieDatabaseJsonUtils;
+import com.chatitze.android.sinema.utilities.NetworkUtils;
 
 import java.net.URL;
 
