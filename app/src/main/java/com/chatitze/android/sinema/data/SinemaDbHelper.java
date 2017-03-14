@@ -23,7 +23,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public SinemaDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -52,13 +52,13 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
                  */
                         SinemaEntry._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
-                        SinemaEntry.COLUMN_RELEASE_DATE     + " INTEGER, "                 +
+                        SinemaEntry.COLUMN_RELEASE_DATE     + " INTEGER NOT NULL, "                 +
 
-                        SinemaEntry.COLUMN_MOVIE_ID         + " INTEGER, "                 +
-                        SinemaEntry.COLUMN_RATING           + " INTEGER, "                 +
+                        SinemaEntry.COLUMN_MOVIE_ID         + " INTEGER, NOT NULL "                 +
+                        SinemaEntry.COLUMN_RATING           + " INTEGER NOT NULL, "                 +
 
-                        SinemaEntry.COLUMN_ORIGINAL_TITLE   + " REAL, "                    +
-                        SinemaEntry.COLUMN_OVERVIEW         + " REAL" + ");";
+                        SinemaEntry.COLUMN_ORIGINAL_TITLE   + " REAL NOT NULL, "                    +
+                        SinemaEntry.COLUMN_OVERVIEW         + " REAL NOT NULL" + ");";
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute
@@ -81,6 +81,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SinemaEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
 }
