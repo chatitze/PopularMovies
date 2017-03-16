@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.chatitze.android.sinema.data.SinemaPreferences;
 import com.chatitze.android.sinema.utilities.NetworkUtils;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -27,17 +28,19 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private TextView mOverview;
     private TextView mReleaseDate;
     private TextView mRating;
+    private MaterialFavoriteButton mFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        mMovieImage    = (ImageView) findViewById(R.id.iv_image);
+        mMovieImage    = (ImageView) findViewById(R.id.iv_poster);
         mOriginalTitle = (TextView) findViewById(R.id.tv_original_title);
         mOverview      = (TextView) findViewById(R.id.tv_overview);
         mReleaseDate   = (TextView) findViewById(R.id.tv_release_date);
         mRating        = (TextView) findViewById(R.id.tv_rating);
+        mFavorite      = new MaterialFavoriteButton.Builder(this).favorite(true).create();
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
@@ -56,6 +59,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mReleaseDate.setText("Released: " + mMovieDetails[3]);
             mOverview.setText(mMovieDetails[4]);
         }
+
+        mFavorite.setOnFavoriteChangeListener(
+                new MaterialFavoriteButton.OnFavoriteChangeListener() {
+                    @Override
+                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+                        //
+                    }
+                });
     }
 
     /**
