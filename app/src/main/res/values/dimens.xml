@@ -3,6 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="image_poster_height">500dp</dimen>
+    <dimen name="image_poster_height">300dp</dimen>
+    <dimen name="image_poster_width">180dp</dimen>
 
 </resources>

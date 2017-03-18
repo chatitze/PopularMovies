@@ -20,7 +20,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
-    private static final String POPULAR_MOVIES_SHARE_HASHTAG = " #PopularMoviesApp";
+    private static final String SINEMA_SHARE_HASHTAG = " #SinemaApp";
 
     private String [] mMovieDetails;
     private ImageView mMovieImage;
@@ -83,7 +83,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                         + " Rating: " + mMovieDetails[2]
                         + " Released: " + mMovieDetails[3]
                         + " Overview: " + mMovieDetails[4]
-                        + POPULAR_MOVIES_SHARE_HASHTAG)
+                        + SINEMA_SHARE_HASHTAG)
                 .getIntent();
         return shareIntent;
     }

@@ -1,5 +1,6 @@
 <resources>
 
-    <dimen name="image_poster_height">1000dp</dimen>
+    <dimen name="image_poster_height">600dp</dimen>
+    <dimen name="image_poster_width">360dp</dimen>
 
 </resources>
