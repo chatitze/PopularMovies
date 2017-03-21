@@ -9,6 +9,85 @@
         android:layout_height="wrap_content">
 
 
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:id="@+id/tv_original_title"-->
+                <!--android:textStyle="italic"-->
+                <!--android:textSize="20sp"-->
+                <!--android:textColor="@android:color/white"-->
+                <!--android:background="@android:color/holo_blue_light"-->
+                <!--android:textScaleX="@android:integer/config_mediumAnimTime"/>-->
+
+            <!--<ImageView-->
+                <!--android:layout_width="@dimen/image_poster_width"-->
+                <!--android:layout_height="@dimen/image_poster_height"-->
+                <!--android:id="@+id/iv_poster"-->
+                <!--android:scaleType="fitCenter"-->
+                <!--android:adjustViewBounds="true"/>-->
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical">-->
+
+
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal">-->
+
+                    <!--<com.github.ivbaranov.mfb.MaterialFavoriteButton-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--app:mfb_type="heart"-->
+                        <!--app:mfb_color="black"-->
+                        <!--android:id="@+id/iv_favourite"/>-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/tv_rating"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:layout_marginRight="5dp"-->
+                        <!--android:layout_marginTop="5dp"-->
+                        <!--android:textSize="18sp"-->
+                        <!--android:textColor="@android:color/black"/>-->
+
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/tv_release_date"-->
+                        <!--android:layout_alignRight="@+id/tv_rating"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:layout_marginRight="5dp"-->
+                        <!--android:layout_marginTop="5dp"-->
+                        <!--android:textSize="18sp"-->
+                        <!--android:textColor="@android:color/black"/>-->
+                <!--</LinearLayout>-->
+
+            <!--</LinearLayout>-->
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/tv_overview"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!--android:textSize="16sp"-->
+                <!--android:textColor="@android:color/black"/>-->
+
+        <!--</LinearLayout>-->
+
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -92,5 +171,6 @@
                 android:textColor="@android:color/black"/>
 
         </RelativeLayout>
+
     </ScrollView>
 </FrameLayout>
