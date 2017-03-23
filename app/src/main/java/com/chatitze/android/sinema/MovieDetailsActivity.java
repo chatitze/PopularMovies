@@ -1,18 +1,26 @@
 package com.chatitze.android.sinema;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chatitze.android.sinema.data.SinemaPreferences;
+import com.chatitze.android.sinema.utilities.MovieDatabaseJsonUtils;
 import com.chatitze.android.sinema.utilities.NetworkUtils;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 
 /**
  * Created by chatitze on 07/02/2017.
@@ -23,6 +31,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private static final String SINEMA_SHARE_HASHTAG = " #SinemaApp";
 
     private String [] mMovieDetails;
+    private String [][] mTrailerDetails;
     private ImageView mMovieImage;
     private TextView mOriginalTitle;
     private TextView mOverview;
@@ -46,18 +55,21 @@ public class MovieDetailsActivity extends AppCompatActivity {
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
             mMovieDetails = intentThatStartedThisActivity.getStringArrayExtra(Intent.EXTRA_TEXT);
 
-            if(SinemaPreferences.isPreferredImageDownload_WifiOnly(this) && NetworkUtils.isConnectedThroughWiFi(this))
+            if(SinemaPreferences.isPreferredImageDownload_WifiOnly(this) && !NetworkUtils.isConnectedThroughWiFi(this))
+                mMovieImage.setImageResource(R.drawable.place_holder_bitmap);
+            else
                 Picasso.with(MovieDetailsActivity.this).load(NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieDetails[0])
                         .placeholder(R.drawable.place_holder_bitmap) // optional
                         .error(R.drawable.place_holder_bitmap)
                         .into(mMovieImage);
-            else
-                mMovieImage.setImageResource(R.drawable.place_holder_bitmap);
 
             mOriginalTitle.setText(mMovieDetails[1]);
             mRating.setText("Rating: " + mMovieDetails[2]);
             mReleaseDate.setText("Released: " + mMovieDetails[3]);
             mOverview.setText(mMovieDetails[4]);
+            // Fetch trailers for this movie, by providing the movie ID
+            new FetchTrailerTask().execute(mMovieDetails[5]);
+
         }
 
         mFavorite.setOnFavoriteChangeListener(
@@ -105,5 +117,87 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method is called when play a trailer button is clicked. It will open the specified trailer
+     * represented by the variable trailerUri using implicit Intents.
+     *
+     * @param clickedTrailerIndex Trailer index that was clicked.
+     */
+    private void onClickPlayTrailer(int clickedTrailerIndex) {
+        Uri trailerUri = Uri.parse(NetworkUtils.YOUTUBE_BASE_URL).buildUpon()
+                .appendQueryParameter(NetworkUtils.WATCH_QUERY, mTrailerDetails[clickedTrailerIndex][1])
+                .build();
+        /*
+         * Here, we create the Intent with the action of ACTION_VIEW. This action allows the user
+         * to view particular content. In this case, our trailer URL.
+         */
+        Intent intent = new Intent(Intent.ACTION_VIEW, trailerUri);
+
+        /*
+         * This is a check we perform with every implicit Intent that we launch. In some cases,
+         * the device where this code is running might not have an Activity to perform the action
+         * with the data we've specified. Without this check, in those cases your app would crash.
+         */
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+
+    public class FetchTrailerTask extends AsyncTask<String, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(String... params) {
+            /* If there's no movie id, there's nothing to look up. */
+            if (params.length == 0) {
+                return null;
+            }
+            URL trailerRequestUrl = NetworkUtils.buildGetTrailersUrl(params[0]);
+
+            try {
+                String jsonTrailerResponse = NetworkUtils.getResponseFromHttpUrl(trailerRequestUrl);
+
+                String[] simpleJsonTrailerData = MovieDatabaseJsonUtils
+                        .getSimpleTrailerStringsFromJson(MovieDetailsActivity.this, jsonTrailerResponse);
+
+                return simpleJsonTrailerData;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final String[] trailerData) {
+            if (trailerData != null) {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.ll_trailer_layout);
+                LayoutInflater inflater = LayoutInflater.from(MovieDetailsActivity.this);
+                mTrailerDetails = new String[trailerData.length][6];
+                for (int i = 0; i < trailerData.length; i++) {
+                    final int position = i;
+                    mTrailerDetails[i] = trailerData[i].split("_");
+
+                    View trailerView = inflater.inflate(R.layout.movie_trailer_content, linearLayout, false);
+
+                    // fill in any details dynamically here
+                    TextView trailerName = (TextView) trailerView.findViewById(R.id.tv_trailer_name);
+                    trailerName.setText(mTrailerDetails[i][2]);
+
+                    ImageView trailerPlayButton = (ImageView) trailerView.findViewById(R.id.iv_play_button);
+                    trailerPlayButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onClickPlayTrailer(position);
+                        }
+                    });
+                    linearLayout.addView(trailerView);
+                }
+            } else{
+                // do nothing - no trailers to display
+            }
+        }
     }
 }

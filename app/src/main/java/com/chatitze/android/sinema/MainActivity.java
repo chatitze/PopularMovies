@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
              */
             @Override
             public String[] loadInBackground() {
-                URL movieRequestUrl = NetworkUtils.buildUrl(mSortBy);
+                URL movieRequestUrl = NetworkUtils.buildGetMoviesUrl(mSortBy);
 
                 try {
                     String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);

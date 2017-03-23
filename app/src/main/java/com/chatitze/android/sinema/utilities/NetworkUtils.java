@@ -24,11 +24,22 @@ public class NetworkUtils {
     final static String MOVIEDATABASE_BASE_URL =
             "https://api.themoviedb.org/3/movie";
 
+    public final static String YOUTUBE_BASE_URL =
+            "https://www.youtube.com/watch";
+
     public final static String MOVIES_POSTER_ENDPOINT =
             "http://image.tmdb.org/t/p/w500/";
 
     final static String PARAM_QUERY = "api_key";
     final static String API_KEY = "YOUR_API_KEY";
+
+    final static String VIDEO = "videos";
+    final static String REVIEW= "reviews";
+
+    public final static String WATCH_QUERY = "v";
+
+
+    // https://api.themoviedb.org/3/movie/263115/videos?api_key=d1a53e6693a9ab0ab36556b35dee3401
 
     /*
      * Default: results are sorted by popularity.
@@ -42,18 +53,51 @@ public class NetworkUtils {
      * @param sortBy The sort field. Either popular or top rated.
      * @return The URL to use to query the Movie Database.
      */
-    public static URL buildUrl(String sortBy) {
+    public static URL buildGetMoviesUrl(String sortBy) {
         Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(sortBy)
                 .appendQueryParameter(PARAM_QUERY, API_KEY)
                 .build();
 
+        return buildURL(builtUri);
+    }
+
+    /**
+     * Builds the URL used to query the Movie Trailers.
+     *
+     * @param id The id of movie.
+     * @return The URL to use to query the Movie Trailers.
+     */
+    public static URL buildGetTrailersUrl(String id){
+        Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(id)
+                .appendPath(VIDEO)
+                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .build();
+
+        return buildURL(builtUri);
+    }
+
+    /**
+     * Builds the URL used to query the Movie Reviews.
+     *
+     * @param id The id of movie.
+     * @return The URL to use to query the Movie Reviews.
+     */
+    public static URL buildGetReviewsUrl(String id){
+        Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(id)
+                .appendPath(REVIEW)
+                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .build();
+
+        return buildURL(builtUri);
+    }
+
+    public static URL buildURL(Uri builtUri){
         URL url = null;
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
         return url;
     }
 

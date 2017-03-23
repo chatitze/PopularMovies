@@ -24,17 +24,21 @@
                 <!--android:background="@android:color/holo_blue_light"-->
                 <!--android:textScaleX="@android:integer/config_mediumAnimTime"/>-->
 
-            <!--<ImageView-->
-                <!--android:layout_width="@dimen/image_poster_width"-->
-                <!--android:layout_height="@dimen/image_poster_height"-->
-                <!--android:id="@+id/iv_poster"-->
-                <!--android:scaleType="fitCenter"-->
-                <!--android:adjustViewBounds="true"/>-->
+
             <!--<LinearLayout-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--android:orientation="vertical">-->
 
+
+                <!--<ImageView-->
+                    <!--android:layout_width="@dimen/image_poster_width"-->
+                    <!--android:layout_height="@dimen/image_poster_height"-->
+                    <!--android:id="@+id/iv_poster"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:adjustViewBounds="true"-->
+                    <!--android:layout_marginTop="0dp"-->
+                    <!--android:layout_marginLeft="5dp"/>-->
 
 
                 <!--<LinearLayout-->
@@ -70,6 +74,7 @@
                         <!--android:layout_marginTop="5dp"-->
                         <!--android:textSize="18sp"-->
                         <!--android:textColor="@android:color/black"/>-->
+
                 <!--</LinearLayout>-->
 
             <!--</LinearLayout>-->
@@ -84,6 +89,35 @@
                 <!--android:layout_marginBottom="5dp"-->
                 <!--android:textSize="16sp"-->
                 <!--android:textColor="@android:color/black"/>-->
+
+            <!--<View-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:id="@+id/vertical_line2"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:rotation="180"-->
+                <!--android:background="@android:color/black"-->
+                <!--android:layout_marginLeft="5dp"-->
+                <!--android:layout_marginRight="5dp"/>-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/tv_trailer_label"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="10dp"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:layout_marginTop="5dp"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textColor="@android:color/black"-->
+                <!--android:text="@string/label_trailer"/>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/ll_trailer_layout"-->
+                <!--android:orientation="vertical"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+            <!--</LinearLayout>-->
 
         <!--</LinearLayout>-->
 
@@ -107,19 +141,16 @@
                 app:mfb_type="heart"
                 app:mfb_color="black"
                 android:id="@+id/iv_favourite"
-                android:layout_below="@+id/iv_poster"
-                android:layout_alignRight="@+id/iv_poster"
-                android:layout_marginRight="5dp"/>
-
+                android:layout_below="@+id/iv_poster"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_original_title"
-                android:layout_below="@+id/iv_poster"
+                android:layout_below="@+id/iv_favourite"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="0dp"
                 android:textStyle="italic"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"/>
@@ -169,6 +200,38 @@
                 android:layout_marginBottom="5dp"
                 android:textSize="16sp"
                 android:textColor="@android:color/black"/>
+
+            <View
+                android:layout_width="fill_parent"
+                android:id="@+id/vertical_line2"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:rotation="180"
+                android:background="@android:color/black"
+                android:layout_below="@+id/tv_overview"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_trailer_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vertical_line2"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:text="@string/label_trailer"/>
+
+            <LinearLayout
+                android:id="@+id/ll_trailer_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/tv_trailer_label">
+            </LinearLayout>
 
         </RelativeLayout>
 
