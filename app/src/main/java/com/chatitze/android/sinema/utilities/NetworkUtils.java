@@ -38,9 +38,6 @@ public class NetworkUtils {
 
     public final static String WATCH_QUERY = "v";
 
-
-    // https://api.themoviedb.org/3/movie/263115/videos?api_key=d1a53e6693a9ab0ab36556b35dee3401
-
     /*
      * Default: results are sorted by popularity.
      */

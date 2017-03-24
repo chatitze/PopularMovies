@@ -3,4 +3,5 @@
     android:id="@+id/activity_settings"
     android:name="com.chatitze.android.sinema.SettingsFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"/>
