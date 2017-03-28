@@ -200,4 +200,59 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         }
     }
+
+    public class FetchReviewTask extends AsyncTask<String, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(String... params) {
+            /* If there's no movie id, there's nothing to look up. */
+            if (params.length == 0) {
+                return null;
+            }
+            URL trailerRequestUrl = NetworkUtils.buildGetTrailersUrl(params[0]);
+
+            try {
+                String jsonTrailerResponse = NetworkUtils.getResponseFromHttpUrl(trailerRequestUrl);
+
+                String[] simpleJsonTrailerData = MovieDatabaseJsonUtils
+                        .getSimpleTrailerStringsFromJson(MovieDetailsActivity.this, jsonTrailerResponse);
+
+                return simpleJsonTrailerData;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final String[] trailerData) {
+            if (trailerData != null) {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.ll_trailer_layout);
+                LayoutInflater inflater = LayoutInflater.from(MovieDetailsActivity.this);
+                mTrailerDetails = new String[trailerData.length][6];
+                for (int i = 0; i < trailerData.length; i++) {
+                    final int position = i;
+                    mTrailerDetails[i] = trailerData[i].split("_");
+
+                    View trailerView = inflater.inflate(R.layout.movie_trailer_content, linearLayout, false);
+
+                    // fill in any details dynamically here
+                    TextView trailerName = (TextView) trailerView.findViewById(R.id.tv_trailer_name);
+                    trailerName.setText(mTrailerDetails[i][2]);
+
+                    ImageView trailerPlayButton = (ImageView) trailerView.findViewById(R.id.iv_play_button);
+                    trailerPlayButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onClickPlayTrailer(position);
+                        }
+                    });
+                    linearLayout.addView(trailerView);
+                }
+            } else{
+                // do nothing - no trailers to display
+            }
+        }
+    }
 }

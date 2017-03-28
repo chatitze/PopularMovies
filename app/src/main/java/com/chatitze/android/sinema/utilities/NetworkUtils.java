@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 
+import com.chatitze.android.sinema.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -31,7 +33,6 @@ public class NetworkUtils {
             "http://image.tmdb.org/t/p/w500/";
 
     final static String PARAM_QUERY = "api_key";
-    final static String API_KEY = "YOUR_API_KEY";
 
     final static String VIDEO = "videos";
     final static String REVIEW= "reviews";
@@ -52,7 +53,7 @@ public class NetworkUtils {
      */
     public static URL buildGetMoviesUrl(String sortBy) {
         Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(sortBy)
-                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .appendQueryParameter(PARAM_QUERY, BuildConfig.API_KEY)
                 .build();
 
         return buildURL(builtUri);
@@ -67,7 +68,7 @@ public class NetworkUtils {
     public static URL buildGetTrailersUrl(String id){
         Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(id)
                 .appendPath(VIDEO)
-                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .appendQueryParameter(PARAM_QUERY, BuildConfig.API_KEY)
                 .build();
 
         return buildURL(builtUri);
@@ -82,7 +83,7 @@ public class NetworkUtils {
     public static URL buildGetReviewsUrl(String id){
         Uri builtUri = Uri.parse(MOVIEDATABASE_BASE_URL).buildUpon().appendPath(id)
                 .appendPath(REVIEW)
-                .appendQueryParameter(PARAM_QUERY, API_KEY)
+                .appendQueryParameter(PARAM_QUERY, BuildConfig.API_KEY)
                 .build();
 
         return buildURL(builtUri);
