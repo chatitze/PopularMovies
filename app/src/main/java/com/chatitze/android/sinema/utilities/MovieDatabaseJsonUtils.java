@@ -86,4 +86,36 @@ public class MovieDatabaseJsonUtils {
         return parsedTrailerData;
     }
 
+    public static String[] getSimpleReviewStringsFromJson(Context context, String trailersJsonStr)
+            throws JSONException {
+
+       /* Review information. Each review's info is an element of the "result" array */
+        final String MD_REVIEW_RESULTS  = "results";
+        final String MD_REVIEW_ID       = "id";
+        final String MD_REVIEW_AUTHOR   = "author";
+        final String MD_REVIEW_CONTENT  = "content";
+        final String MD_REVIEW_TMDB_URL = "url";
+
+        /* String array to hold each trailer' detail */
+        String[] parsedReviewData = null;
+
+        JSONObject reviewssJson = new JSONObject(trailersJsonStr);
+        JSONArray reviewsArray = reviewssJson.getJSONArray(MD_REVIEW_RESULTS);
+
+        parsedReviewData = new String[reviewsArray.length()];
+
+        for (int i = 0; i < reviewsArray.length(); i++) {
+            /* Get the JSON object representing the trailer */
+            JSONObject reviewRecord = reviewsArray.getJSONObject(i);
+
+            String reviewId  = reviewRecord.getString(MD_REVIEW_ID);
+            String author    = reviewRecord.getString(MD_REVIEW_AUTHOR);
+            String content   = reviewRecord.getString(MD_REVIEW_CONTENT);
+            String tmdbUrl   = reviewRecord.getString(MD_REVIEW_TMDB_URL);
+
+            parsedReviewData[i] = reviewId + "_" + author + "_"
+                    + tmdbUrl + "_" + content;
+        }
+        return parsedReviewData;
+    }
 }

@@ -38,7 +38,7 @@
 
 
     <string name="label_trailer">Trailers:</string>
-
+    <string name="label_review">Reviews:</string>
 
     <string name="error_message">An error has occurred. Please try again by clicking REFRESH in actions</string>
 

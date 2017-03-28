@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +33,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private String [] mMovieDetails;
     private String [][] mTrailerDetails;
+    private String [][] mReviewDetails;
     private ImageView mMovieImage;
     private TextView mOriginalTitle;
     private TextView mOverview;
@@ -69,6 +71,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
             mOverview.setText(mMovieDetails[4]);
             // Fetch trailers for this movie, by providing the movie ID
             new FetchTrailerTask().execute(mMovieDetails[5]);
+            // Fetch reviews for this movie, by providing the movie ID
+            new FetchReviewTask().execute(mMovieDetails[5]);
 
         }
 
@@ -209,15 +213,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
             if (params.length == 0) {
                 return null;
             }
-            URL trailerRequestUrl = NetworkUtils.buildGetTrailersUrl(params[0]);
+            URL reviewRequestUrl = NetworkUtils.buildGetReviewsUrl(params[0]);
 
             try {
-                String jsonTrailerResponse = NetworkUtils.getResponseFromHttpUrl(trailerRequestUrl);
+                String jsonReviewResponse = NetworkUtils.getResponseFromHttpUrl(reviewRequestUrl);
 
-                String[] simpleJsonTrailerData = MovieDatabaseJsonUtils
-                        .getSimpleTrailerStringsFromJson(MovieDetailsActivity.this, jsonTrailerResponse);
+                String[] simpleJsonReviewData = MovieDatabaseJsonUtils
+                        .getSimpleReviewStringsFromJson(MovieDetailsActivity.this, jsonReviewResponse);
 
-                return simpleJsonTrailerData;
+                return simpleJsonReviewData;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -226,29 +230,24 @@ public class MovieDetailsActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(final String[] trailerData) {
-            if (trailerData != null) {
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.ll_trailer_layout);
+        protected void onPostExecute(final String[] reviewData) {
+            if (reviewData != null) {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.ll_review_layout);
                 LayoutInflater inflater = LayoutInflater.from(MovieDetailsActivity.this);
-                mTrailerDetails = new String[trailerData.length][6];
-                for (int i = 0; i < trailerData.length; i++) {
+                mReviewDetails = new String[reviewData.length][4];
+                for (int i = 0; i < reviewData.length; i++) {
                     final int position = i;
-                    mTrailerDetails[i] = trailerData[i].split("_");
+                    mReviewDetails[i] = reviewData[i].split("_");
 
-                    View trailerView = inflater.inflate(R.layout.movie_trailer_content, linearLayout, false);
+                    View reviewView = inflater.inflate(R.layout.movie_review_content, linearLayout, false);
 
-                    // fill in any details dynamically here
-                    TextView trailerName = (TextView) trailerView.findViewById(R.id.tv_trailer_name);
-                    trailerName.setText(mTrailerDetails[i][2]);
+                    TextView reviewContent = (TextView) reviewView.findViewById(R.id.tv_review_content);
+                    reviewContent.setText("\"" + mReviewDetails[i][3] + "\"");
 
-                    ImageView trailerPlayButton = (ImageView) trailerView.findViewById(R.id.iv_play_button);
-                    trailerPlayButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onClickPlayTrailer(position);
-                        }
-                    });
-                    linearLayout.addView(trailerView);
+                    TextView reviewAuthor = (TextView) reviewView.findViewById(R.id.tv_review_author);
+                    reviewAuthor.setText(mReviewDetails[i][1] + " \n -----------------");
+
+                    linearLayout.addView(reviewView);
                 }
             } else{
                 // do nothing - no trailers to display

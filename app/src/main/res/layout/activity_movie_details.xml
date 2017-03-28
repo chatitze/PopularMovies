@@ -135,6 +135,39 @@
                 android:layout_below="@+id/tv_trailer_label">
             </LinearLayout>
 
+            <View
+                android:layout_width="fill_parent"
+                android:id="@+id/vertical_line3"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:rotation="180"
+                android:background="@android:color/white"
+                android:layout_below="@+id/ll_trailer_layout"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_review_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vertical_line3"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="@string/label_review"/>
+
+            <LinearLayout
+                android:id="@+id/ll_review_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@+id/tv_review_label">
+            </LinearLayout>
+
         </RelativeLayout>
 
     </ScrollView>
