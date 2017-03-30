@@ -109,14 +109,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
                             // Display the URI that's returned with a Toast
                             if(uri != null) {
                                 //Snackbar.make(buttonView, mMovie.getOriginalTitle() + " ADDED to your FAVORITE movies", Snackbar.LENGTH_SHORT).show();
-                                Toast.makeText(getBaseContext(), mMovie.getOriginalTitle() + " ADDED to your FAVORITE movies", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(), "\"" + mMovie.getOriginalTitle() + "\" ADDED to your FAVORITE movies", Toast.LENGTH_LONG).show();
                             }
 
                         } else { // remove the movies from favorite list : delete it from moves table
                             int deleteCount = getContentResolver().delete(createUriWithMovieID(), null, null);
                             if(deleteCount == 1){
                                 //Snackbar.make(buttonView, mMovie.getOriginalTitle() + " removed from your FAVORITE movies", Snackbar.LENGTH_SHORT).show();
-                                Toast.makeText(getBaseContext(), mMovie.getOriginalTitle() + " removed from your FAVORITE movies", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getBaseContext(), "\"" + mMovie.getOriginalTitle() + "\" REMOVED from your FAVORITE movies", Toast.LENGTH_LONG).show();
                             }
                         }
                     }

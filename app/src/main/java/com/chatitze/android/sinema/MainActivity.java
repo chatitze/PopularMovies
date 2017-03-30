@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final int MOVIES_LOADER_ID = 1;
+    private static final int FAVORITE_LIST_LOADER_ID = 2;
+    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
+
     private RecyclerView mRecyclerView;
     private ImageAdapter mImageAdapter;
     private ProgressBar mLoadingIndicator;
@@ -45,9 +49,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
     private List<Movie> mMovieDataFromAsyncTask;
 
-    private static final int MOVIES_LOADER_ID = 1;
-    private static final int FAVORITE_LIST_LOADER_ID = 2;
-    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
+    private int mSelectedMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -263,7 +265,8 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        mSelectedMenuItem = item.getItemId();
+        switch (mSelectedMenuItem){
             case R.id.action_sortByPopularity:
                 mSortBy = NetworkUtils.sortByPopularity;
                 break;
@@ -306,7 +309,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     @Override
     protected void onStart() {
         super.onStart();
-
         /*
          * If the preferences for location or units have changed since the user was last in
          * MainActivity, perform another query and set the flag to false.
@@ -322,6 +324,14 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             getSupportLoaderManager().restartLoader(MOVIES_LOADER_ID, null, this);
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
+
+        /*
+         * If the favorite movies have changed since the user was last in
+         * MainActivity, perform another query for the updated favorite movies' list.
+         */
+        if(mSelectedMenuItem == R.id.action_favorite_movies)
+            getSupportLoaderManager().restartLoader(FAVORITE_LIST_LOADER_ID, null, this);
+
     }
 
     @Override
@@ -332,8 +342,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
-
-
 
     private List<Movie> getFavoriteMoviesFromCache(){
         try {
