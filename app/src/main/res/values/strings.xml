@@ -16,6 +16,7 @@
     <!--typically from the action bar.  The ActionBar is limited real estate, so shorter is better.-->
     <string name="action_sortByPopularity">Sort by popularity</string>
     <string name="action_sortByTopRated">Sort by top rated</string>
+    <string name="action_favorite_movies">Favorite movies</string>
     <string name="action_share">Share</string>
     <!--Used in overflow menu to refresh movie data-->
     <string name="action_refresh">Refresh</string>

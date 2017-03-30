@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.chatitze.android.sinema.R;
+import com.chatitze.android.sinema.data.Movie;
 import com.chatitze.android.sinema.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 
 /**
@@ -24,7 +27,7 @@ import com.squareup.picasso.Picasso;
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
     private Context mContext;
-    private String[]  mImageUrls;
+    private List<Movie> mMovieList;
     private boolean isDownloadEnabled;
 
     final private ImageAdapterOnClickHandler mClickHandler;
@@ -119,7 +122,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
            holder.imageView.setImageResource(R.drawable.place_holder_bitmap);
             return;
         }
-        String url = NetworkUtils.MOVIES_POSTER_ENDPOINT + mImageUrls[position];
+        String url = NetworkUtils.MOVIES_POSTER_ENDPOINT + mMovieList.get(position).getPosterPath();
         Picasso.with(mContext).load(url).placeholder(R.drawable.place_holder_bitmap) // optional
                 .error(R.drawable.place_holder_bitmap).into(holder.imageView);
     }
@@ -132,8 +135,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      */
     @Override
     public int getItemCount() {
-        if (null == mImageUrls) return 0;
-        return mImageUrls.length;
+        if (null == mMovieList) return 0;
+        return mMovieList.size();
     }
 
 
@@ -142,10 +145,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
      * created one. This is handy when we get new data from the web but don't want to create a
      * new ImageAdapter to display it.
      *
-     * @param imageUrls The new image url's data to be displayed.
+     * @param movies The new movie's data to be displayed.
      */
-    public void setImageData(String[] imageUrls) {
-        mImageUrls = imageUrls;
+    public void setMovieData(List<Movie> movies) {
+        mMovieList = movies;
         notifyDataSetChanged();
     }
 

@@ -13,6 +13,10 @@
         android:orderInCategory="1"
         android:title="@string/action_sortByTopRated"/>
     <item
+        android:id="@+id/action_favorite_movies"
+        android:orderInCategory="1"
+        android:title="@string/action_favorite_movies"/>
+    <item
         android:id="@+id/action_refresh"
         android:orderInCategory="2"
         android:title="@string/action_refresh"/>

@@ -4,14 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.chatitze.android.sinema.data.SinemaContract.SinemaEntry;
+import com.chatitze.android.sinema.data.MovieContract.MovieEntry;
 /**
  * Created by chatitze on 14/03/2017.
  *
- * Manages a local database for sinema data.
+ * Manages a local database for movie data.
  */
 
-public class SinemaDbHelper extends SQLiteOpenHelper {
+public class MovieDbHelper extends SQLiteOpenHelper {
 
     /*
      * This is the name of our database. Database names should be descriptive and end with the
@@ -25,7 +25,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
      */
     private static final int DATABASE_VERSION = 1;
 
-    public SinemaDbHelper(Context context) {
+    public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -43,29 +43,30 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
          */
         final String SQL_CREATE_MOVIES_TABLE =
 
-                "CREATE TABLE " + SinemaEntry.TABLE_NAME + " (" +
+                "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
 
                 /*
-                 * SinemaEntry did not explicitly declare a column called "_ID". However,
-                 * SinemaEntry implements the interface, "BaseColumns", which does have a field
+                 * MovieEntry did not explicitly declare a column called "_ID". However,
+                 * MovieEntry implements the interface, "BaseColumns", which does have a field
                  * named "_ID". We use that here to designate our table's primary key.
                  */
-                        SinemaEntry._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                        MovieEntry._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
 
-                        SinemaEntry.COLUMN_RELEASE_DATE     + " INTEGER NOT NULL, "                 +
+                        MovieEntry.COLUMN_RELEASE_DATE     + " TEXT NOT NULL, "                    +
 
-                        SinemaEntry.COLUMN_MOVIE_ID         + " INTEGER, NOT NULL "                 +
-                        SinemaEntry.COLUMN_RATING           + " INTEGER NOT NULL, "                 +
+                        MovieEntry.COLUMN_MOVIE_ID         + " INTEGER NOT NULL, "                 +
+                        MovieEntry.COLUMN_RATING           + " REAL NOT NULL, "                    +
 
-                        SinemaEntry.COLUMN_ORIGINAL_TITLE   + " REAL NOT NULL, "                    +
-                        SinemaEntry.COLUMN_OVERVIEW         + " REAL NOT NULL"                      +
+                        MovieEntry.COLUMN_ORIGINAL_TITLE   + " TEXT NOT NULL, "                    +
+                        MovieEntry.COLUMN_POSTER_PATH      + " TEXT NOT NULL, "                    +
+                        MovieEntry.COLUMN_OVERVIEW         + " TEXT NOT NULL, "                    +
                         /*
                          * To ensure this table can only contain one Movie with the same movie id, we declare
                          * the movie id column to be unique. We also specify "ON CONFLICT REPLACE". This tells
                          * SQLite that if we have a movie entry with a certain id and we attempt to
                          * insert another movie entry with that id, we replace the old movie entry.
                          */
-                        " UNIQUE (" + SinemaEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+                        " UNIQUE (" + MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute
@@ -88,7 +89,7 @@ public class SinemaDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SinemaEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

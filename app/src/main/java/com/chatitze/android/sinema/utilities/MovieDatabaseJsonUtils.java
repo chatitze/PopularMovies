@@ -1,10 +1,13 @@
 package com.chatitze.android.sinema.utilities;
 
-import android.content.Context;
+import com.chatitze.android.sinema.data.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by chatitze on 03/02/2017.
@@ -12,7 +15,7 @@ import org.json.JSONObject;
 
 public class MovieDatabaseJsonUtils {
 
-    public static String[] getSimpleMovieStringsFromJson(Context context, String moviesJsonStr)
+    public static List<Movie> getSimpleMovieListFromJson(String moviesJsonStr)
             throws JSONException {
 
         /* Movie information. Each movie's info is an element of the "result" array */
@@ -24,13 +27,11 @@ public class MovieDatabaseJsonUtils {
         final String MD_RATING         = "vote_average";
         final String MD_RELEASE_DATE   = "release_date";
 
-        /* String array to hold each movies' detail */
-        String[] parsedMovieData = null;
+        /* ArrayList to hold each movies' detail */
+        List<Movie> parsedMovieList = new ArrayList<>();
 
         JSONObject moviesJson = new JSONObject(moviesJsonStr);
         JSONArray moviesArray = moviesJson.getJSONArray(MD_RESULTS);
-
-        parsedMovieData = new String[moviesArray.length()];
 
         for (int i = 0; i < moviesArray.length(); i++) {
             /* Get the JSON object representing the movie */
@@ -43,13 +44,16 @@ public class MovieDatabaseJsonUtils {
             int movieId              = movie.getInt(MD_MOVIE_ID);
             double voteAverage       = movie.getDouble(MD_RATING);
 
-            parsedMovieData[i] = posterPath + "_" + originalTitle + "_"
-                    + voteAverage + "_" + releaseDateString + "_" + overview+ "_" + movieId;
+            parsedMovieList.add(new Movie.MovieBuilder().movieId(movieId).posterPath(posterPath).overview(overview)
+                    .originalTitle(originalTitle).releaseDate(releaseDateString)
+                    .voteAverage(voteAverage).isFavorite(false).build());
+
         }
-        return parsedMovieData;
+
+        return parsedMovieList;
     }
 
-    public static String[] getSimpleTrailerStringsFromJson(Context context, String trailersJsonStr)
+    public static String[] getSimpleTrailerStringsFromJson(String trailersJsonStr)
             throws JSONException {
 
         /* Trailer information. Each trailer's info is an element of the "result" array */
@@ -86,7 +90,7 @@ public class MovieDatabaseJsonUtils {
         return parsedTrailerData;
     }
 
-    public static String[] getSimpleReviewStringsFromJson(Context context, String trailersJsonStr)
+    public static String[] getSimpleReviewStringsFromJson(String trailersJsonStr)
             throws JSONException {
 
        /* Review information. Each review's info is an element of the "result" array */
@@ -99,8 +103,8 @@ public class MovieDatabaseJsonUtils {
         /* String array to hold each trailer' detail */
         String[] parsedReviewData = null;
 
-        JSONObject reviewssJson = new JSONObject(trailersJsonStr);
-        JSONArray reviewsArray = reviewssJson.getJSONArray(MD_REVIEW_RESULTS);
+        JSONObject reviewsJson = new JSONObject(trailersJsonStr);
+        JSONArray reviewsArray = reviewsJson.getJSONArray(MD_REVIEW_RESULTS);
 
         parsedReviewData = new String[reviewsArray.length()];
 

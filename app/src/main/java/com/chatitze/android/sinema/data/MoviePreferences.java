@@ -11,7 +11,7 @@ import com.chatitze.android.sinema.R;
  * Created by chatitze on 13/03/2017.
  */
 
-public class SinemaPreferences {
+public class MoviePreferences {
 
     private static final boolean DEFAULT_IMAGE_WIFI_ONLY = true;
 

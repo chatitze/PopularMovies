@@ -3,6 +3,7 @@ package com.chatitze.android.sinema;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -19,14 +20,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chatitze.android.sinema.adapter.ImageAdapter;
-import com.chatitze.android.sinema.data.SinemaPreferences;
+import com.chatitze.android.sinema.data.Movie;
+import com.chatitze.android.sinema.data.MovieContract;
+import com.chatitze.android.sinema.data.MoviePreferences;
 import com.chatitze.android.sinema.utilities.MovieDatabaseJsonUtils;
 import com.chatitze.android.sinema.utilities.NetworkUtils;
+import com.google.gson.Gson;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ImageAdapter.ImageAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<String[]>, SharedPreferences.OnSharedPreferenceChangeListener{
+        LoaderManager.LoaderCallbacks<List<Movie>>, SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -37,9 +43,10 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
     private String mSortBy = NetworkUtils.sortByPopularity;
 
-    private String [] mMovieDataFromAsyncTask;
+    private List<Movie> mMovieDataFromAsyncTask;
 
-    private static final int MOVIES_LOADER_ID = 0;
+    private static final int MOVIES_LOADER_ID = 1;
+    private static final int FAVORITE_LIST_LOADER_ID = 2;
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
 
     @Override
@@ -61,17 +68,12 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         mRecyclerView.setAdapter(mImageAdapter);
 
         /*
-         * This ID will uniquely identify the Loader. We can use it, for example, to get a handle
-         * on our Loader at a later point in time through the support LoaderManager.
-         */
-        int loaderId = MOVIES_LOADER_ID;
-        /*
          * From MainActivity, we have implemented the LoaderCallbacks interface with the type of
-         * String array. (implements LoaderCallbacks<String[]>) The variable callback is passed
+         * List<Movie>. (implements LoaderCallbacks<SList<Movie>>) The variable callback is passed
          * to the call to initLoader below. This means that whenever the loaderManager has
          * something to notify us of, it will do so through this callback.
          */
-        LoaderManager.LoaderCallbacks<String[]> callback = MainActivity.this;
+        LoaderManager.LoaderCallbacks<List<Movie>> callback = MainActivity.this;
 
         /*
          * The second parameter of the initLoader method below is a Bundle. Optionally, you can
@@ -86,13 +88,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
          * the last created loader is re-used.
          */
-        getSupportLoaderManager().initLoader(loaderId, bundleForLoader, callback);
-
-
-        /*
-         * We won't be using FetchMoviesTask anymore
-         */
-        //loadMoviesData();
+        getSupportLoaderManager().initLoader(MOVIES_LOADER_ID, bundleForLoader, callback);
 
         /*
          * Register MainActivity as an OnPreferenceChangedListener to receive a callback when a
@@ -101,15 +97,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
          */
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
-
-    /**
-     * This method will get the user's preferred sort option, and then tell some
-     * background method to get the movie data in the background.
-     */
-//    private void loadMoviesData() {
-//        showMoviesDataView();
-//        new FetchMoviesTask().execute(mSortBy);
-//    }
 
     /**
      * This method will make the View for the movies data visible and
@@ -145,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      */
     private void invalidateData() {
         setImageDownloadOption();
-        mImageAdapter.setImageData(null);
+        mImageAdapter.setMovieData(null);
     }
 
     /**
@@ -158,9 +145,12 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      */
     @Override
     public void onClick(int clickedMovieIndex) {
-        final String[] movieDetails = mMovieDataFromAsyncTask[clickedMovieIndex].split("_");
+        Movie movie = mMovieDataFromAsyncTask.get(clickedMovieIndex);
+        Gson gSon = new Gson();
+        String target = gSon.toJson(movie); // Converts the object to a JSON String
+
         final Intent startMovieDetailsActivityIntent = new Intent(MainActivity.this, MovieDetailsActivity.class);
-        startMovieDetailsActivityIntent.putExtra(Intent.EXTRA_TEXT, movieDetails);
+        startMovieDetailsActivityIntent.putExtra(Intent.EXTRA_TEXT, target);
         startActivity(startMovieDetailsActivityIntent);
     }
 
@@ -173,12 +163,12 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      * @return Return a new Loader instance that is ready to start loading.
      */
     @Override
-    public Loader<String[]> onCreateLoader(int id, final Bundle loaderArgs) {
+    public Loader<List<Movie>> onCreateLoader(final int id, final Bundle loaderArgs) {
 
-        return new AsyncTaskLoader<String[]>(this) {
+        return new AsyncTaskLoader<List<Movie>>(this) {
 
-            /* This String array will hold and help cache our weather data */
-            String[] mMovieData = null;
+            /* This list will hold and help cache our favorite movies data */
+            List<Movie> mMovieData = null;
 
             /**
              * Subclasses of AsyncTaskLoader must implement this to take care of loading their data.
@@ -195,27 +185,21 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
             /**
              * This is the method of the AsyncTaskLoader that will load and parse the JSON data
-             * from MovieDatabase in the background.
+             * from MovieDatabase or queries from our internal Movies database for favorite movies
+             * in the background.
              *
-             * @return Weather data from MovieDatabase as an array of Strings.
+             * @return Movie data as a list.
              *         null if an error occurs
              */
             @Override
-            public String[] loadInBackground() {
-                URL movieRequestUrl = NetworkUtils.buildGetMoviesUrl(mSortBy);
-
-                try {
-                    String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-
-                    String[] simpleJsonMovieData = MovieDatabaseJsonUtils
-                            .getSimpleMovieStringsFromJson(MainActivity.this, jsonMovieResponse);
-
-                    return simpleJsonMovieData;
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
+            public List<Movie> loadInBackground() {
+                switch (id){
+                    case MOVIES_LOADER_ID:
+                        return getMoviesFromNetwork();
+                    case FAVORITE_LIST_LOADER_ID:
+                        return getFavoriteMoviesFromCache();
                 }
+                return null;
             }
 
             /**
@@ -223,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
              *
              * @param data The result of the load
              */
-            public void deliverResult(String[] data) {
+            public void deliverResult(List<Movie> data) {
                 mMovieData = data;
                 super.deliverResult(data);
             }
@@ -237,18 +221,12 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      * @param data The data generated by the Loader.
      */
     @Override
-    public void onLoadFinished(Loader<String[]> loader, String[] data) {
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         if (data != null) {
             showMoviesDataView();
-            String [] imageUrls = new String[data.length];
-
-            for (int i = 0; i < data.length; i++){
-                String[] myMovieDetails = data[i].split("_");
-                imageUrls[i] = myMovieDetails[0];
-            }
             setImageDownloadOption();
-            mImageAdapter.setImageData(imageUrls);
+            mImageAdapter.setMovieData(data);
             mMovieDataFromAsyncTask = data;
         } else {
             showErrorMessage();
@@ -263,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
      * @param loader The Loader that is being reset.
      */
     @Override
-    public void onLoaderReset(Loader<String[]> loader) {
+    public void onLoaderReset(Loader<List<Movie>> loader) {
         /*
          * We aren't using this method in our example application, but we are required to Override
          * it to implement the LoaderCallbacks<String> interface
@@ -271,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     }
 
     private void setImageDownloadOption(){
-        if(SinemaPreferences.isPreferredImageDownload_WifiOnly(this))
+        if(MoviePreferences.isPreferredImageDownload_WifiOnly(this))
             mImageAdapter.setIsDownloadEnabled(NetworkUtils.isConnectedThroughWiFi(this));
         else
             mImageAdapter.setIsDownloadEnabled(true);
@@ -292,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             case R.id.action_sortByTopRated:
                 mSortBy = NetworkUtils.sortByTopRated;
                 break;
+            case R.id.action_favorite_movies:
+                getSupportLoaderManager().restartLoader(FAVORITE_LIST_LOADER_ID, null, this);
+                return true;
             case R.id.action_refresh:
                 invalidateData();
                 break;
@@ -299,8 +280,8 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
                 Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
                 startActivity(startSettingsActivity);
                 return true;
+
         }
-        //loadMoviesData();
         getSupportLoaderManager().restartLoader(MOVIES_LOADER_ID, null, this);
 
         return super.onOptionsItemSelected(item);
@@ -352,53 +333,65 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-//    public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            mLoadingIndicator.setVisibility(View.VISIBLE);
-//        }
-//
-//        @Override
-//        protected String[] doInBackground(String... params) {
-//            /* If there's no sortBy, there's nothing to look up. */
-//            if (params.length == 0) {
-//                return null;
-//            }
-//            URL movieRequestUrl = NetworkUtils.buildUrl(params[0]);
-//
-//            try {
-//                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-//
-//                String[] simpleJsonMovieData = MovieDatabaseJsonUtils
-//                        .getSimpleMovieStringsFromJson(MainActivity.this, jsonMovieResponse);
-//
-//                return simpleJsonMovieData;
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(final String[] movieData) {
-//            mLoadingIndicator.setVisibility(View.INVISIBLE);
-//            if (movieData != null) {
-//                showMoviesDataView();
-//                String [] imageUrls = new String[movieData.length];
-//
-//                for (int i = 0; i < movieData.length; i++){
-//                    String[] myMovieDetails = movieData[i].split("_");
-//                    imageUrls[i] = myMovieDetails[0];
-//                }
-//                mImageAdapter.setImageData(imageUrls);
-//                mMovieDataFromAsyncTask = movieData;
-//            } else {
-//                showErrorMessage();
-//            }
-//        }
-//    }
+
+
+    private List<Movie> getFavoriteMoviesFromCache(){
+        try {
+            Cursor cursor =  getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    MovieContract.MovieEntry.COLUMN_RATING);
+            return readFromCursor(cursor);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to asynchronously load data.");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private List<Movie> readFromCursor(Cursor cursor){
+
+        List<Movie> favoriteListFromCache = new ArrayList<>();
+
+        int movieIdIndex     = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+        int titleIndex       = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
+        int overviewIndex    = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW);
+        int ratingIndex      = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RATING);
+        int releaseDateIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
+        int posterPathIndex  = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            String releaseDateString = cursor.getString(releaseDateIndex);
+            int movieId = cursor.getInt(movieIdIndex);
+            double rating = cursor.getDouble(ratingIndex);
+            String title = cursor.getString(titleIndex);
+            String overview = cursor.getString(overviewIndex);
+            String posterPath = cursor.getString(posterPathIndex);
+
+            favoriteListFromCache.add(new Movie.MovieBuilder().movieId(movieId)
+                    .posterPath(posterPath).overview(overview)
+                    .originalTitle(title).releaseDate(releaseDateString)
+                    .voteAverage(rating).build());
+        }
+        return favoriteListFromCache;
+    }
+
+    private List<Movie> getMoviesFromNetwork(){
+        URL movieRequestUrl = NetworkUtils.buildGetMoviesUrl(mSortBy);
+
+        try {
+            String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+
+            List<Movie> simpleMovieListData = MovieDatabaseJsonUtils.getSimpleMovieListFromJson(jsonMovieResponse);
+
+            return simpleMovieListData;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 }
