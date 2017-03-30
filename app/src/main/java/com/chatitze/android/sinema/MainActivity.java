@@ -101,43 +101,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     }
 
     /**
-     * This method will make the View for the movies data visible and
-     * hide the error message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
-    private void showMoviesDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the movie data is visible */
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * This method will make the error message visible and hide the movie
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
-    private void showErrorMessage() {
-        /* First, hide the currently visible data */
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * This method is used when we are resetting data, so that at one point in time during a
-     * refresh of our data, you can see that there is no data showing.
-     */
-    private void invalidateData() {
-        setImageDownloadOption();
-        mImageAdapter.setMovieData(null);
-    }
-
-    /**
      * This is where we receive our callback from
      * {@link ImageAdapter.ImageAdapterOnClickHandler}
      *
@@ -324,14 +287,17 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             getSupportLoaderManager().restartLoader(MOVIES_LOADER_ID, null, this);
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         /*
          * If the favorite movies have changed since the user was last in
-         * MainActivity, perform another query for the updated favorite movies' list.
+         * MainActivity, perform a query for the updated favorite movies' list.
          */
         if(mSelectedMenuItem == R.id.action_favorite_movies)
             getSupportLoaderManager().restartLoader(FAVORITE_LIST_LOADER_ID, null, this);
-
     }
 
     @Override
@@ -342,6 +308,44 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
+    /**
+     * This method will make the View for the movies data visible and
+     * hide the error message.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't
+     * need to check whether each view is currently visible or invisible.
+     */
+    private void showMoviesDataView() {
+        /* First, make sure the error is invisible */
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        /* Then, make sure the movie data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * This method will make the error message visible and hide the movie
+     * View.
+     * <p>
+     * Since it is okay to redundantly set the visibility of a View, we don't
+     * need to check whether each view is currently visible or invisible.
+     */
+    private void showErrorMessage() {
+        /* First, hide the currently visible data */
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        /* Then, show the error */
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * This method is used when we are resetting data, so that at one point in time during a
+     * refresh of our data, you can see that there is no data showing.
+     */
+    private void invalidateData() {
+        setImageDownloadOption();
+        mImageAdapter.setMovieData(null);
+    }
+
 
     private List<Movie> getFavoriteMoviesFromCache(){
         try {
